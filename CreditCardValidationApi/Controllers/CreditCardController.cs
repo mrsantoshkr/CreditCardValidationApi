@@ -1,13 +1,21 @@
 ﻿using CreditCardValidationApi.Models;
+using CreditCardValidationApi.Repository;
 using CreditCardValidationApi.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CreditCardValidationApi.Controllers
 {
-    [Route("api/[controller]")]
     [ApiController]
+    [Route("[controller]")]
     public class CreditCardController : ControllerBase
     {
+        private readonly ICreditCardService _service;
+
+        public CreditCardController(ICreditCardService service)
+        {
+            _service = service;
+        }
+
         [HttpPost("validate")]
         public ActionResult<bool> ValidateCreditCard([FromBody] CreditCardModel model)
         {
@@ -16,8 +24,13 @@ namespace CreditCardValidationApi.Controllers
                 return BadRequest("Credit card number is required.");
             }
 
-            bool isValid = LuhnValidator.IsValid(model.CreditCardNumber);
+            // Deliberately throw an exception to test the error handling middleware
+            //throw new Exception("Test exception");
+
+            bool isValid = _service.ValidateCreditCard(model.CreditCardNumber);
             return Ok(isValid);
         }
     }
+
+
 }

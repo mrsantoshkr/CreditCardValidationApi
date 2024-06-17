@@ -1,3 +1,4 @@
+using CreditCardValidationApi.Repository;
 using Microsoft.AspNetCore.Builder;
 
 namespace CreditCardValidationApi
@@ -7,6 +8,9 @@ namespace CreditCardValidationApi
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+
+            // Register the service here
+            builder.Services.AddScoped<ICreditCardService, CreditCardService>();
 
             // Add services to the container.
             builder.Services.AddControllers();
@@ -26,10 +30,10 @@ namespace CreditCardValidationApi
                 });
             }
 
+            app.UseMiddleware<ErrorHandlingMiddleware>();
+
             app.UseHttpsRedirection();
-
             app.UseAuthorization();
-
             app.MapControllers();
 
             app.Run();

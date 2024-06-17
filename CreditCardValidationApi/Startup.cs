@@ -1,14 +1,16 @@
-﻿using Microsoft.OpenApi.Models;
+﻿using CreditCardValidationApi.Repository;
+using Microsoft.OpenApi.Models;
 
 public class Startup
 {
     public void ConfigureServices(IServiceCollection services)
     {
-        services.AddControllers();
         services.AddSwaggerGen(c =>
         {
             c.SwaggerDoc("v1", new OpenApiInfo { Title = "CreditCardValidationApi", Version = "v1" });
         });
+        services.AddScoped<ICreditCardService, CreditCardService>();
+        services.AddControllers();
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -23,6 +25,8 @@ public class Startup
                 c.RoutePrefix = string.Empty;  // This makes Swagger UI the root page
             });
         }
+
+        app.UseMiddleware<ErrorHandlingMiddleware>();
 
         app.UseHttpsRedirection();
         app.UseRouting();
