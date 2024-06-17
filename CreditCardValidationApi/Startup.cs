@@ -1,4 +1,5 @@
 ﻿using CreditCardValidationApi.Repository;
+using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 
 public class Startup
@@ -13,7 +14,7 @@ public class Startup
         services.AddControllers();
     }
 
-    public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+    public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILogger<Startup> logger)
     {
         if (env.IsDevelopment())
         {
@@ -34,6 +35,13 @@ public class Startup
         app.UseEndpoints(endpoints =>
         {
             endpoints.MapControllers();
+        });
+
+        app.Use(async (context, next) =>
+        {
+            logger.LogInformation("Handling request: " + context.Request.Path);
+            await next.Invoke();
+            logger.LogInformation("Finished handling request.");
         });
     }
 }
